@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -170,6 +172,22 @@ fun DashboardScreen(viewModel: TournamentViewModel) {
 fun GuideTabContent(context: Context) {
     var subTabSelected by remember { mutableStateOf(0) }
     val sections = CodeAssets.sheetStructureAndFormulas
+
+    var exportCodeText by remember { mutableStateOf("") }
+    val createFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/javascript")
+    ) { uri ->
+        uri?.let {
+            try {
+                context.contentResolver.openOutputStream(it)?.use { os ->
+                    os.write(exportCodeText.toByteArray(Charsets.UTF_8))
+                }
+                Toast.makeText(context, "¡Código descargado con éxito!", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error al guardar el archivo: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -382,22 +400,48 @@ fun GuideTabContent(context: Context) {
                             Text(
                                 "3. Código Google Apps Script",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
+                                fontSize = 15.sp,
                                 color = SportGold
                             )
                         }
+                    }
+                    
+                    Spacer(Modifier.height(10.dp))
+                    
+                    // Row of high-utility Action Buttons: Copy and Direct Download
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = SportBlue),
                             shape = RoundedCornerShape(6.dp),
                             onClick = {
                                 copyToClipboard(context, selectedScriptCode)
-                                Toast.makeText(context, "Código Apps Script copiado con éxito", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Código copiado con éxito", Toast.LENGTH_SHORT).show()
                             },
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(12.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Copiar Todo", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("Copiar Código", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                        
+                        Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = SportOrange),
+                            shape = RoundedCornerShape(6.dp),
+                            onClick = {
+                                exportCodeText = selectedScriptCode
+                                val filename = if (appsScriptTypeSelection == 0) "fixture_round_robin.js" else "plantilla_doble_cancha_40_juegos.js"
+                                createFileLauncher.launch(filename)
+                            },
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(12.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Descargar (.js)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                     
