@@ -44,6 +44,15 @@ jobs:
       with:
         name: aplicacion-torneo-apk
         path: "**/build/outputs/apk/debug/*.apk"        else
+          echo "No se encontro un proyecto valido de Android."
+          exit 1
+        fi
+
+    - name: Guardar y subir el APK terminado
+      uses: actions/upload-artifact@v4
+      with:
+        name: aplicacion-torneo-apk
+        path: "**/build/outputs/apk/debug/*.apk"        else
           echo "No se encontró un proyecto válido de Android."
           exit 1
         fi
