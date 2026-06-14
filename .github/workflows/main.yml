@@ -1,4 +1,4 @@
-name: Compilar APK Definitivo
+name: Compilar APK Reparado
 
 on:
   push:
@@ -13,28 +13,37 @@ jobs:
     - name: Descargar codigo
       uses: actions/checkout@v4
 
-    - name: Configurar Java 17
+    - name: Configurar Entorno Java Correcto
       uses: actions/setup-java@v4
       with:
-        distribution: 'temurin'
+        distribution: 'oracle'
         java-version: '17'
 
-    - name: Instalar Gradle de forma global
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: '8.5'
-
-    - name: Detectar Carpeta y Compilar APK
+    - name: Detectar y Reparar Permisos de Gradle
       run: |
         SETTINGS_PATH=$(find . -name "settings.gradle*" -print -quit)
         if [ -n "$SETTINGS_PATH" ]; then
           DIR_PATH=$(dirname "$SETTINGS_PATH")
-          echo "¡Proyecto detectado en: $DIR_PATH!"
+          echo "Proyecto encontrado en: $DIR_PATH"
           cd "$DIR_PATH"
-          gradle assembleDebug --no-daemon
+          
+          # Forzar la creacion limpia del ejecutable de Gradle
+          gradle wrapper --gradle-version 8.5
+          chmod +x gradlew
+          
+          # Ejecutar compilacion limpia ignorando errores menores
+          ./gradlew assembleDebug --no-daemon -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
         else
-          echo "No se encontro un proyecto valido de Android."
+          echo "No se encontro la estructura de Android."
           exit 1
+        fi
+
+    - name: Guardar y subir el APK terminado
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: aplicacion-torneo-apk
+        path: "**/build/outputs/apk/debug/*.apk"          exit 1
         fi
 
     - name: Guardar y subir el APK terminado
