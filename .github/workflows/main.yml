@@ -18,23 +18,21 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
-        cache: 'gradle'
 
-    - name: Buscar y Compilar de forma automática
+    - name: Configurar Gradle y Compilar
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: wrapper # Esto fuerza al servidor a usar la versión correcta de forma externa
+
+    - name: Forzar Compilación de la App
       run: |
-        # Buscar el archivo gradlew en cualquier rincón del repositorio
-        GRADLEW_PATH=$(find . -name "gradlew" -print -quit)
-        
-        if [ -n "$GRADLEW_PATH" ]; then
-          echo "¡Archivo gradlew encontrado en: $GRADLEW_PATH!"
-          # Extraer la carpeta donde está guardado
-          DIR_PATH=$(dirname "$GRADLEW_PATH")
-          cd "$DIR_PATH"
-          chmod +x gradlew
-          ./gradlew assembleDebug
+        if [ -d "app" ]; then
+          gradle assembleDebug
+        elif [ -d "aplicación" ]; then
+          cd aplicación
+          gradle assembleDebug
         else
-          echo "ERROR: No se encontró el archivo gradlew por ningún lado."
-          exit 1
+          gradle assembleDebug
         fi
 
     - name: Subir archivo APK resultante
@@ -42,10 +40,3 @@ jobs:
       with:
         name: app-torneo-debug
         path: "**/build/outputs/apk/debug/*.apk"
-    - name: Subir archivo APK resultante
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-torneo-debug
-        path: |
-          aplicación/build/outputs/apk/debug/*.apk
-          build/outputs/apk/debug/*.apk
