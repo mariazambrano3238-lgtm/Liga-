@@ -1,4 +1,4 @@
-name: Compilar APK de Android
+name: Compilar APK Nativo
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Descargar el código del repositorio
+    - name: Descargar codigo
       uses: actions/checkout@v4
 
     - name: Configurar Java 17
@@ -19,22 +19,22 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Forzar Gradle compatible y Compilar
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: '8.5' # Forzamos una versión estable y compatible con Java 17
-
-    - name: Ejecutar Compilación
+    - name: Generar e instalar Gradle manualmente
       run: |
-        if [ -d "app" ]; then
-          gradle assembleDebug --no-daemon
-        elif [ -d "aplicación" ]; then
-          cd aplicación
-          gradle assembleDebug --no-daemon
-        else
-          gradle assembleDebug --no-daemon
-        fi
+        cd aplicación
+        gradle wrapper --gradle-version 8.5
+        chmod +x gradlew
 
+    - name: Compilar APK de Android
+      run: |
+        cd aplicación
+        ./gradlew assembleDebug --no-daemon
+
+    - name: Guardar y subir el APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: aplicacion-torneo-apk
+        path: aplicación/app/build/outputs/apk/debug/*.apk
     - name: Subir archivo APK resultante
       uses: actions/upload-artifact@v4
       with:
