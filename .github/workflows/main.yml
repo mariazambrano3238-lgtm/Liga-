@@ -52,6 +52,15 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: aplicacion-torneo-apk
+        path: "**/build/outputs/apk/debug/*.apk"          echo "No se encontro la estructura de Android."
+          exit 1
+        fi
+
+    - name: Guardar y subir el APK terminado
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: aplicacion-torneo-apk
         path: "**/build/outputs/apk/debug/*.apk"          exit 1
         fi
 
