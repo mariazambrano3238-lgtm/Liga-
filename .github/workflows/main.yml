@@ -19,22 +19,27 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Configurar Gradle y Compilar
+    - name: Forzar Gradle compatible y Compilar
       uses: gradle/actions/setup-gradle@v3
       with:
-        gradle-version: wrapper # Esto fuerza al servidor a usar la versión correcta de forma externa
+        gradle-version: '8.5' # Forzamos una versión estable y compatible con Java 17
 
-    - name: Forzar Compilación de la App
+    - name: Ejecutar Compilación
       run: |
         if [ -d "app" ]; then
-          gradle assembleDebug
+          gradle assembleDebug --no-daemon
         elif [ -d "aplicación" ]; then
           cd aplicación
-          gradle assembleDebug
+          gradle assembleDebug --no-daemon
         else
-          gradle assembleDebug
+          gradle assembleDebug --no-daemon
         fi
 
+    - name: Subir archivo APK resultante
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-torneo-debug
+        path: "**/build/outputs/apk/debug/*.apk"
     - name: Subir archivo APK resultante
       uses: actions/upload-artifact@v4
       with:
