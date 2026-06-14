@@ -1,69 +1,20 @@
-name: Compilar APK Estable
-
-on:
-  push:
-    branches: [ "principal", "main" ]
-  workflow_dispatch:
+name: Build APK
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Descargar codigo
-      uses: actions/checkout@v4
-
-    - name: Configurar Java 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: Configurar Entorno de Android
-      uses: android-actions/setup-android@v3
-
-    - name: Compilar con Gradle Action (Evita Errores de Comando)
-      uses: gradle/actions/setup-gradle@v4
-      with:
-        gradle-version: current
-        arguments: assembleDebug --no-daemon
-
-    - name: Guardar y subir el APK terminado
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"          echo "No se encontro la estructura de Android."
-          exit 1
-        fi
-
-    - name: Guardar y subir el APK terminado
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"          echo "No se encontro la estructura de Android."
-          exit 1
-        fi
-
-    - name: Guardar y subir el APK terminado
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"          echo "No se encontro la estructura de Android."
-          exit 1
-        fi
-
-    - name: Guardar y subir el APK terminado
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"          exit 1
-        fi
-
-    - name: Guardar y subir el APK terminado
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
