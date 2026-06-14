@@ -1,4 +1,4 @@
-name: Compilar APK Nativo
+name: Compilar APK Definitivo
 
 on:
   push:
@@ -19,22 +19,31 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Generar e instalar Gradle manualmente
-      run: |
-        cd aplicación
-        gradle wrapper --gradle-version 8.5
-        chmod +x gradlew
+    - name: Instalar Gradle de forma global
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.5'
 
-    - name: Compilar APK de Android
+    - name: Detectar Carpeta y Compilar APK
       run: |
-        cd aplicación
-        ./gradlew assembleDebug --no-daemon
+        # Buscar de forma automática dónde está el archivo settings.gradle.kts o settings.gradle
+        SETTINGS_PATH=$(find . -name "settings.gradle*" -print -quit)
+        
+        if [ -n "$SETTINGS_PATH" ]; then
+          DIR_PATH=$(dirname "$SETTINGS_PATH")
+          echo "¡Proyecto detectado en el directorio: $DIR_PATH!"
+          cd "$DIR_PATH"
+          gradle assembleDebug --no-daemon
+        else
+          echo "No se encontró un proyecto válido de Android."
+          exit 1
+        fi
 
-    - name: Guardar y subir el APK
+    - name: Guardar y subir el APK terminado
       uses: actions/upload-artifact@v4
       with:
         name: aplicacion-torneo-apk
-        path: aplicación/app/build/outputs/apk/debug/*.apk
+        path: "**/build/outputs/apk/debug/*.apk"        path: aplicación/app/build/outputs/apk/debug/*.apk
     - name: Subir archivo APK resultante
       uses: actions/upload-artifact@v4
       with:
