@@ -1,0 +1,6 @@
+{
+  "name": "Superliga Voleibol",
+  "description": "Sistema de gestión y simulación centralizado para la Superliga de Voleibol de Arena, con guías, fórmulas y códigos de Google Workspace.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
