@@ -1,0 +1,33 @@
+name: Compilar APK de Android
+
+on:
+  push:
+    branches: [ "principal" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Descargar el código del repositorio
+      uses: actions/checkout@v4
+
+    - name: Configurar Java 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'gradle'
+
+    - name: Dar permisos de ejecución a Gradle
+      run: chmod +x gradlew
+
+    - name: Compilar la aplicación (Generar APK)
+      run: ./gradlew assembleDebug
+
+    - name: Subir archivo APK resultante
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-torneo-debug
+        path: aplicación/build/outputs/apk/debug/*.apk
