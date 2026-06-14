@@ -59,3 +59,27 @@ empleos:
           nombre: app-debug-apk
 
           Ruta: app/build/outputs/apk/debug/app-debug.apk
+      - nombre: Configurar el SDK de Android
+
+        Usos: android-actions/setup-android@v3
+
+
+      - nombre: Configurar Gradle
+
+        Usos: gradle/actions/setup-gradle@v4
+
+
+      - nombre: Build Debug APK
+
+        ejecutar: gradle assembleDebug --stacktrace
+
+
+      - nombre: Subir APK
+
+        Usos: acciones/cargar-artefacto@v4
+
+        con:
+
+          nombre: app-debug-apk
+
+          Ruta: app/build/outputs/apk/debug/app-debug.apk
