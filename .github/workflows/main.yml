@@ -26,15 +26,24 @@ jobs:
 
     - name: Detectar Carpeta y Compilar APK
       run: |
-        # Buscar de forma automática dónde está el archivo settings.gradle.kts o settings.gradle
+        # Buscar el archivo de configuracion gradle en el repositorio
         SETTINGS_PATH=$(find . -name "settings.gradle*" -print -quit)
         
         if [ -n "$SETTINGS_PATH" ]; then
           DIR_PATH=$(dirname "$SETTINGS_PATH")
-          echo "¡Proyecto detectado en el directorio: $DIR_PATH!"
+          echo "¡Proyecto detectado en: $DIR_PATH!"
           cd "$DIR_PATH"
           gradle assembleDebug --no-daemon
         else
+          echo "No se encontro un proyecto valido de Android."
+          exit 1
+        fi
+
+    - name: Guardar y subir el APK terminado
+      uses: actions/upload-artifact@v4
+      with:
+        name: aplicacion-torneo-apk
+        path: "**/build/outputs/apk/debug/*.apk"        else
           echo "No se encontró un proyecto válido de Android."
           exit 1
         fi
