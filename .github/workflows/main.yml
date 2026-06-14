@@ -2,9 +2,7 @@ name: Compilar APK Definitivo
 
 on:
   push:
-    branches:
-      - principal
-      - main
+    branches: [ "principal", "main" ]
   workflow_dispatch:
 
 jobs:
@@ -43,41 +41,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"        else
-          echo "No se encontro un proyecto valido de Android."
-          exit 1
-        fi
-
-    - name: Guardar y subir el APK terminado
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"        else
-          echo "No se encontro un proyecto valido de Android."
-          exit 1
-        fi
-
-    - name: Guardar y subir el APK terminado
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"        else
-          echo "No se encontró un proyecto válido de Android."
-          exit 1
-        fi
-
-    - name: Guardar y subir el APK terminado
-      uses: actions/upload-artifact@v4
-      with:
-        name: aplicacion-torneo-apk
-        path: "**/build/outputs/apk/debug/*.apk"        path: aplicación/app/build/outputs/apk/debug/*.apk
-    - name: Subir archivo APK resultante
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-torneo-debug
-        path: "**/build/outputs/apk/debug/*.apk"
-    - name: Subir archivo APK resultante
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-torneo-debug
         path: "**/build/outputs/apk/debug/*.apk"
